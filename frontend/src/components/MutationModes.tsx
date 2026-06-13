@@ -23,31 +23,34 @@ const modes: MutationMode[] = [
 
 /**
  * MutationModes Component
- * Allows users to select which mutation mode to apply.
+ * Allows users to select which mutation mode with glassmorphic styling.
  */
 export default function MutationModes({
   selectedMode,
   onModeChange,
 }: MutationModesProps) {
   return (
-    <div className="p-4 bg-gray-50 rounded-lg">
-      <h3 className="font-bold mb-3 text-gray-700">Mutation Mode</h3>
+    <div>
+      <h3 className="font-bold mb-3 text-white">Mutation Mode</h3>
       <div className="space-y-2">
         {modes.map((mode) => (
-          <label key={mode} className="flex items-center gap-3 cursor-pointer">
+          <label
+            key={mode}
+            className="flex items-center gap-3 cursor-pointer p-3 rounded-lg bg-white/[0.03] backdrop-blur-md border border-white/10 hover:bg-white/[0.08] transition-all duration-200"
+          >
             <input
               type="radio"
               name="mutationMode"
               value={mode}
               checked={selectedMode === mode}
               onChange={() => onModeChange(mode)}
-              className="w-4 h-4"
+              className="w-4 h-4 accent-white/80"
             />
             <div className="flex-1">
-              <div className="font-medium text-gray-800 capitalize">
+              <div className="font-medium text-white capitalize">
                 {mode.replace("-", " ")}
               </div>
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-white/60">
                 {modeDescriptions[mode]}
               </div>
             </div>

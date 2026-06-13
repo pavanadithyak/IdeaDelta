@@ -8,7 +8,7 @@ interface VariableToggleProps {
 
 /**
  * VariableToggle Component
- * Allows users to select/deselect variables that will be used in mutations.
+ * Allows users to select/deselect variables with glassmorphic styling.
  */
 export default function VariableToggle({
   variables,
@@ -20,19 +20,17 @@ export default function VariableToggle({
   }
 
   return (
-    <div className="p-4 bg-gray-50 rounded-lg">
-      <h3 className="font-bold mb-3 text-gray-700">
-        Variables (click to toggle)
-      </h3>
+    <div>
+      <h3 className="font-bold mb-3 text-white">Variables (click to toggle)</h3>
       <div className="flex flex-wrap gap-2">
         {variables.map((variable) => (
           <button
             key={variable}
             onClick={() => onToggle(variable)}
-            className={`px-3 py-2 rounded-full text-sm font-medium transition ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 backdrop-blur-md border ${
               toggleState[variable]
-                ? "bg-blue-500 text-white"
-                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                ? "bg-white/[0.15] border-white/30 text-white"
+                : "bg-white/[0.05] border-white/10 text-white/70 hover:bg-white/[0.1]"
             }`}
           >
             {variable}

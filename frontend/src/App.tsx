@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { searchIdeas } from "./lib/api";
 import { generateAllMutations, MutationMode } from "./lib/mutate";
 import { RepoResult, ToggleState, Idea } from "./types";
+import AuroraBackground from "./components/AuroraBackground";
+import PhoneFrame from "./components/PhoneFrame";
 import IdeaInput from "./components/IdeaInput";
 import RepoRadar from "./components/RepoRadar";
 import VariableToggle from "./components/VariableToggle";
@@ -11,9 +13,12 @@ import IdeaCard from "./components/IdeaCard";
 /**
  * App Component
  * Main application orchestrating the idea search, variable extraction,
- * and mutation workflow.
+ * and mutation workflow with a phone mockup interface.
  */
 export default function App() {
+  // UI state
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // Search state
   const [baseIdea, setBaseIdea] = useState("");
   const [repos, setRepos] = useState<RepoResult[]>([]);
@@ -27,6 +32,30 @@ export default function App() {
   const [mutatedIdeas, setMutatedIdeas] = useState<
     Partial<Record<MutationMode, Idea>>
   >({});
+
+  // Handle Escape key to collapse
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isExpanded) {
+        handleClose();
+      }
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isExpanded]);
+
+  /**
+   * Close the expanded phone view and reset results
+   */
+  const handleClose = () => {
+    setIsExpanded(false);
+    setRepos([]);
+    setVariables([]);
+    setMutatedIdeas({} as Partial<Record<MutationMode, Idea>>);
+    setBaseIdea("");
+    setError("");
+    setToggleState({});
+  };
 
   /**
    * Handle search: fetch repos and variables from GitHub
@@ -55,6 +84,9 @@ export default function App() {
         newToggleState,
       );
       setMutatedIdeas(mutations);
+
+      // Expand overlay to show results
+      setIsExpanded(true);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -91,66 +123,113 @@ export default function App() {
     setSelectedMode(mode);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-gray-900 mb-2">IdeaDelta</h1>
-          <p className="text-xl text-gray-600">
-            Describe an idea. See what already exists. Build what doesn't.
-          </p>
-        </div>
 
-        {/* Input Section */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <IdeaInput onSearch={handleSearch} isLoading={isLoading} />
-          {error && (
-            <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
-              {error}
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-between overflow-hidden z-10">
+      {/* Aurora background */}
+      <AuroraBackground />
+
+      {/* Title and tagline - positioned above phone */}
+      <div className="relative z-20 pt-12 text-center">
+        <h1 className="text-5xl font-space-grotesk tracking-tight font-semibold mb-2 text-white">
+          IdeaDelta
+        </h1>
+        <p className="text-sm text-white/60">
+          Describe an idea. See what already exists. Build what doesn't.
+        </p>
+      </div>
+
+      {/* Phone mockup - positioned at bottom or center based on expanded state */}
+      <div className="relative z-20 flex-1 flex items-center justify-center w-full">
+        <PhoneFrame isExpanded={isExpanded} onClose={handleClose}>
+          {!isExpanded ? (
+            // Resting state: just search bar
+            <div>
+              <IdeaInput
+                onSearch={handleSearch}
+                isLoading={isLoading}
+                isExpanded={false}
+                setIsExpanded={setIsExpanded}
+              />
+            </div>
+          ) : (
+            // Expanded state: search bar + results
+            <div className="space-y-6 max-h-[85vh] overflow-y-auto">
+              {/* Search bar at top */}
+              <IdeaInput
+                onSearch={handleSearch}
+                isLoading={isLoading}
+                isExpanded={isExpanded}
+                setIsExpanded={setIsExpanded}
+              />
+
+              {/* Error message */}
+              {error && (
+                <div className="p-3 bg-red-900/30 text-red-100 rounded-lg border border-red-500/20">
+                  {error}
+                </div>
+              )}
+
+              {/* Results sections */}
+              {repos.length > 0 && (
+                <>
+                  {/* Similar Projects */}
+                  <div className="space-y-3">
+                    <h2 className="text-lg font-semibold text-white">
+                      Similar Projects Found
+                    </h2>
+                    <div className="p-4 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10">
+                      <RepoRadar repos={repos} />
+                    </div>
+                  </div>
+
+                  {/* Variables Toggle */}
+                  <div className="space-y-3">
+                    <h2 className="text-lg font-semibold text-white">
+                      Adjust Variables
+                    </h2>
+                    <div className="p-4 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10">
+                      <VariableToggle
+                        variables={variables}
+                        toggleState={toggleState}
+                        onToggle={handleToggleVariable}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mutation Modes */}
+                  <div className="space-y-3">
+                    <h2 className="text-lg font-semibold text-white">
+                      Mutation Mode
+                    </h2>
+                    <div className="p-4 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10">
+                      <MutationModes
+                        selectedMode={selectedMode}
+                        onModeChange={handleModeChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Mutated Idea */}
+                  {(() => {
+                    const idea = mutatedIdeas[selectedMode];
+                    if (!idea) return null;
+                    return (
+                      <div className="space-y-3">
+                        <h2 className="text-lg font-semibold text-white">
+                          Your Mutated Idea
+                        </h2>
+                        <div className="p-4 rounded-2xl bg-white/[0.03] backdrop-blur-md border border-white/10">
+                          <IdeaCard idea={idea} />
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </>
+              )}
             </div>
           )}
-        </div>
-
-        {/* Results Section */}
-        {repos.length > 0 && (
-          <>
-            {/* Repo Radar */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                Similar Projects Found
-              </h2>
-              <RepoRadar repos={repos} />
-            </div>
-
-            {/* Variables and Mutation Controls */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <VariableToggle
-                variables={variables}
-                toggleState={toggleState}
-                onToggle={handleToggleVariable}
-              />
-              <MutationModes
-                selectedMode={selectedMode}
-                onModeChange={handleModeChange}
-              />
-            </div>
-
-            {/* Mutated Ideas */}
-            {(() => {
-              const idea = mutatedIdeas[selectedMode];
-              if (!idea) return null;
-              return (
-                <div className="bg-white p-6 rounded-lg shadow">
-                  <h2 className="text-2xl font-bold mb-4 text-gray-900">
-                    Your Mutated Idea
-                  </h2>
-                  <IdeaCard idea={idea} />
-                </div>
-              );
-            })()}
-          </>
-        )}
+        </PhoneFrame>
       </div>
     </div>
   );
