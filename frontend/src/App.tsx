@@ -123,7 +123,6 @@ export default function App() {
     setSelectedMode(mode);
   };
 
-
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-between overflow-hidden z-10">
       {/* Aurora background */}
@@ -148,7 +147,6 @@ export default function App() {
               <IdeaInput
                 onSearch={handleSearch}
                 isLoading={isLoading}
-                isExpanded={false}
                 setIsExpanded={setIsExpanded}
               />
             </div>
@@ -159,7 +157,6 @@ export default function App() {
               <IdeaInput
                 onSearch={handleSearch}
                 isLoading={isLoading}
-                isExpanded={isExpanded}
                 setIsExpanded={setIsExpanded}
               />
 

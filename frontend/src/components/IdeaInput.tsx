@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 interface IdeaInputProps {
   onSearch: (query: string) => Promise<void>;
   isLoading: boolean;
-  isExpanded?: boolean;
   setIsExpanded?: (v: boolean) => void;
 }
 
@@ -14,7 +13,6 @@ interface IdeaInputProps {
 export default function IdeaInput({
   onSearch,
   isLoading,
-  isExpanded = false,
   setIsExpanded,
 }: IdeaInputProps) {
   const [input, setInput] = useState("");
