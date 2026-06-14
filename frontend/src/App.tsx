@@ -129,7 +129,11 @@ export default function App() {
       <AuroraBackground />
 
       {/* Title and tagline - positioned above phone */}
-      <div className="relative z-20 pt-12 text-center">
+      <div
+        className={`relative z-20 pt-12 text-center transition-opacity duration-300 ${
+          isExpanded ? "opacity-0" : "opacity-100"
+        }`}
+      >
         <h1 className="text-5xl font-space-grotesk tracking-tight font-semibold mb-2 text-white">
           IdeaDelta
         </h1>
@@ -139,7 +143,7 @@ export default function App() {
       </div>
 
       {/* Phone mockup - positioned at bottom or center based on expanded state */}
-      <div className="relative z-20 flex-1 flex items-center justify-center w-full">
+      <div className="relative z-20 flex-1 w-full">
         <PhoneFrame isExpanded={isExpanded} onClose={handleClose}>
           {!isExpanded ? (
             // Resting state: just search bar
