@@ -27,7 +27,7 @@ export default function PhoneFrame({
       {/* Phone body (outer shell) */}
       <div
         className={`relative pointer-events-auto transition-all duration-500 ease-out ${
-          isExpanded ? "w-96 h-[85vh]" : "w-72 h-[580px]"
+          isExpanded ? "w-[420px] h-[88vh]" : "w-80 h-[620px]"
         }`}
         style={{
           borderRadius: "3rem",
@@ -85,7 +85,7 @@ export default function PhoneFrame({
           {/* Phone screen content area */}
           <div
             className={`relative w-full h-full flex flex-col transition-all duration-500 ease-out ${
-              isExpanded ? "pt-20 px-6 pb-6" : "pt-10 px-4 pb-4"
+              isExpanded ? "pt-20 px-5 pb-4" : "pt-10 px-4 pb-4"
             }`}
           >
             <div className="flex-1 overflow-y-auto scrollbar-hide">
