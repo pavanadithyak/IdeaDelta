@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 interface PhoneFrameProps {
   isExpanded: boolean;
   onClose: () => void;
+  isLoading: boolean;
   children: ReactNode;
 }
 
@@ -14,6 +15,7 @@ interface PhoneFrameProps {
 export default function PhoneFrame({
   isExpanded,
   onClose,
+  isLoading,
   children,
 }: PhoneFrameProps) {
   return (
@@ -27,11 +29,11 @@ export default function PhoneFrame({
       {/* Phone body (outer shell) */}
       <div
         className={`relative pointer-events-auto transition-all duration-500 ease-out ${
-          isExpanded ? "w-[420px] h-[88vh]" : "w-80 h-[620px]"
+          isExpanded ? "w-[420px] h-[88vh]" : "w-[360px] h-[620px]"
         }`}
         style={{
           borderRadius: "3rem",
-          border: "4px solid #3a3a3a",
+          border: "4px solid #4a4a4a",
           background: "linear-gradient(180deg, #242424 0%, #141414 100%)",
           transform: isExpanded ? "translateY(0)" : "translateY(35%)",
           boxShadow: isExpanded
@@ -54,10 +56,17 @@ export default function PhoneFrame({
             background: "#0a0d14",
             backgroundImage:
               "radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.08) 0%, transparent 70%)",
+            boxShadow: "inset 0 0 40px rgba(99,102,241,0.06)",
           }}
         >
           {/* Notch */}
-          <div className="absolute top-3 left-1/2 -translate-x-1/2 w-24 h-2 bg-black rounded-full z-50" />
+          <div
+            className={`absolute top-3 left-1/2 -translate-x-1/2 w-24 h-2 rounded-full z-50 ${
+              isLoading
+                ? "bg-indigo-500/60 animate-pulse"
+                : "bg-black"
+            }`}
+          />
 
           {/* Close button (only visible when expanded) */}
           {isExpanded && (

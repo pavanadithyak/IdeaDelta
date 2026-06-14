@@ -44,7 +44,7 @@ export default function IdeaInput({
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex items-center gap-3">
-        <div className="flex-1 relative">
+        <div className="flex-1 min-w-0 relative">
           <input
             ref={inputRef}
             type="text"
@@ -55,7 +55,9 @@ export default function IdeaInput({
               if (!input.trim()) setIsExpanded?.(false);
             }}
             placeholder="Describe your idea..."
-            className="w-full px-5 py-3 rounded-full bg-white text-black placeholder-gray-500 shadow-lg transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 disabled:opacity-60"
+            title={input}
+            maxLength={120}
+            className="w-full px-5 py-3 rounded-full bg-white text-black placeholder-gray-500 shadow-lg transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 disabled:opacity-60 text-ellipsis overflow-hidden"
             disabled={isLoading}
           />
           {/* Search icon */}
@@ -78,7 +80,7 @@ export default function IdeaInput({
         <button
           type="submit"
           disabled={isLoading || !input.trim()}
-          className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold shadow-lg shadow-indigo-500/30 hover:from-blue-400 hover:to-indigo-500 disabled:opacity-80 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
+          className="px-6 py-3 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold tracking-wide text-sm shadow-lg shadow-indigo-500/30 hover:from-blue-400 hover:to-indigo-500 disabled:opacity-80 disabled:cursor-not-allowed transition-all duration-200 whitespace-nowrap"
         >
           {isLoading ? (
             <span className="flex items-center gap-2">
@@ -92,6 +94,9 @@ export default function IdeaInput({
             "Scan"
           )}
         </button>
+      </div>
+      <div className="text-right text-white/30 text-[10px] mt-1 pr-1">
+        {input.length}/120
       </div>
     </form>
   );

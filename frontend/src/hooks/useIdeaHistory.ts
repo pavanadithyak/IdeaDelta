@@ -6,6 +6,7 @@ const MAX_ITEMS = 5;
 interface UseIdeaHistoryReturn {
   history: string[];
   addToHistory: (query: string) => void;
+  removeFromHistory: (query: string) => void;
   clearHistory: () => void;
 }
 
@@ -30,9 +31,13 @@ export function useIdeaHistory(): UseIdeaHistoryReturn {
     });
   }, []);
 
+  const removeFromHistory = useCallback((query: string) => {
+    setHistory((prev) => prev.filter((item) => item !== query));
+  }, []);
+
   const clearHistory = useCallback(() => {
     setHistory([]);
   }, []);
 
-  return { history, addToHistory, clearHistory };
+  return { history, addToHistory, removeFromHistory, clearHistory };
 }

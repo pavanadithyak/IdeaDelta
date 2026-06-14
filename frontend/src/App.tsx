@@ -35,7 +35,7 @@ export default function App() {
   >({});
 
   // History
-  const { history, addToHistory, clearHistory } = useIdeaHistory();
+  const { history, addToHistory, removeFromHistory } = useIdeaHistory();
 
   // Novelty score derived from repos
   const noveltyScore =
@@ -158,7 +158,7 @@ export default function App() {
 
       {/* Hero Section */}
       <div
-        className={`relative z-20 flex flex-col items-center justify-center min-h-[50vh] pt-16 transition-opacity duration-500 ${
+        className={`relative z-20 flex flex-col items-center justify-center min-h-[45vh] pt-16 transition-opacity duration-500 ${
           isExpanded ? "opacity-30" : "opacity-100"
         }`}
       >
@@ -168,7 +168,7 @@ export default function App() {
         <p className="text-lg text-white/60 mt-2">
           Describe an idea. See what already exists. Build what doesn't.
         </p>
-        <div className="flex gap-3 mt-6 justify-center">
+        <div className="flex gap-3 mt-8 justify-center">
           <span className="bg-white/10 backdrop-blur-sm border border-white/15 text-white/80 text-xs px-4 py-1.5 rounded-full">
             ⚡ GitHub-powered scan
           </span>
@@ -179,26 +179,11 @@ export default function App() {
             🤖 Copilot-ready prompts
           </span>
         </div>
-        <div className="mt-8 animate-bounce">
-          <svg
-            className="w-6 h-6 text-white/30"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </div>
       </div>
 
       {/* Phone Section */}
       <div className="relative z-20 flex-1">
-        <PhoneFrame isExpanded={isExpanded} onClose={handleClose}>
+        <PhoneFrame isExpanded={isExpanded} onClose={handleClose} isLoading={isLoading}>
           {!isExpanded ? (
             // Resting state: search bar + recent history
             <div className="space-y-3">
@@ -207,36 +192,42 @@ export default function App() {
                 isLoading={isLoading}
                 setIsExpanded={setIsExpanded}
               />
-              {history.length > 0 && (
-                <div className="space-y-1.5">
-                  <p className="text-[10px] text-white/40 uppercase tracking-wider">
-                    Recent
-                  </p>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {history.map((item) => (
-                      <button
-                        key={item}
-                        onClick={() => {
-                          handleSearch(item);
-                          setIsExpanded(true);
-                        }}
-                        className="text-xs text-white/60 bg-white/5 border border-white/10 px-3 py-1 rounded-full cursor-pointer hover:bg-white/15 transition-all"
-                      >
-                        {item.length > 20
-                          ? item.slice(0, 20) + "…"
-                          : item}
-                      </button>
-                    ))}
-                    <button
-                      onClick={clearHistory}
-                      className="text-xs text-white/40 hover:text-white/60 px-1.5"
-                      title="Clear history"
-                    >
-                      ×
-                    </button>
-                  </div>
+              <div className="space-y-1.5">
+                <p className="text-[10px] text-white/40 uppercase tracking-wider">
+                  Recent
+                </p>
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {history.length > 0
+                    ? history.map((item) => (
+                        <button
+                          key={item}
+                          onClick={() => {
+                            handleSearch(item);
+                            setIsExpanded(true);
+                          }}
+                          className="flex items-center gap-1.5 text-xs text-white/60 bg-white/5 border border-white/10 px-3 py-1 rounded-full cursor-pointer hover:bg-white/15 transition-all max-w-[180px]"
+                          title={item}
+                        >
+                          <span className="truncate">{item}</span>
+                          <span
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFromHistory(item);
+                            }}
+                            className="text-white/40 hover:text-white/80 shrink-0"
+                          >
+                            ×
+                          </span>
+                        </button>
+                      ))
+                    : Array.from({ length: 3 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="bg-white/5 animate-pulse w-24 h-6 rounded-full"
+                        />
+                      ))}
                 </div>
-              )}
+              </div>
             </div>
           ) : (
             // Expanded state: search bar + results
